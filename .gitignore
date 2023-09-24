@@ -1,3 +1,6 @@
+# build system
+[Bb]uild/
+
 # Prerequisites
 *.d
 
