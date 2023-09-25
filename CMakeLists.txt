@@ -10,7 +10,9 @@ project(voyage
 )
 
 set(VOYAGE_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-set(VOYAGE_SOURCE_DIR "${PROECT_SOURCE_DIR}/source")
+set(VOYAGE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/source")
+message(STATUS "source dir ${VOYAGE_SOURCE_DIR}")
+message(STATUS "include dir ${VOYAGE_INCLUDE_DIR}")
 
 set(CXX_OPTIONS -Wall -Wextra -Wconversion -Wdeprecated -Wpedantic -Werror)
 
