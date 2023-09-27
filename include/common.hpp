@@ -5,6 +5,12 @@
 #include <cstdint>
 
 namespace voyage {
+#if !defined(NDEBUG)
+constexpr inline auto debug = 1;
+#else
+constexpr inline auto debug = 0;
+#endif
+
 using u8 = uint8_t;
 using u16 = uint16_t;
 using u32 = uint32_t;

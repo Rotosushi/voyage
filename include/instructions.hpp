@@ -3,7 +3,6 @@
 
 namespace voyage {
 enum class Instruction : u8 {
-  HALT = 0,
   RETURN,
 
   CONSTANT_U8,
