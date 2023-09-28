@@ -9,5 +9,12 @@ enum class Instruction : u8 {
   CONSTANT_U16,
   CONSTANT_U32,
   CONSTANT_U64,
+
+  NEGATE,
+
+  ADD,
+  SUB,
+  MUL,
+  DIV,
 };
 } // namespace voyage

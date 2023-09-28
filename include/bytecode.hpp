@@ -167,6 +167,12 @@ public:
       writeImmediate(index, sizeof(u64), line);
     }
   }
+
+  void emitNegate(size_t line) { write(Instruction::NEGATE, line); }
+  void emitAdd(size_t line) { write(Instruction::ADD, line); }
+  void emitSub(size_t line) { write(Instruction::SUB, line); }
+  void emitMul(size_t line) { write(Instruction::MUL, line); }
+  void emitDiv(size_t line) { write(Instruction::DIV, line); }
 };
 
 size_t print_simple(std::ostream &out, const char *name,
@@ -184,10 +190,8 @@ size_t print_constant(std::ostream &out, const char *name,
   return offset + 1 + bytes;
 }
 
-size_t print_instruction(std::ostream &out, Bytecode const &bytecode,
-                         size_t offset) {
-  out << std::format("{:04d} {:4d} ", offset, bytecode.getLine(offset));
-
+size_t print_dispatch(std::ostream &out, Bytecode const &bytecode,
+                      size_t offset) noexcept {
   auto instruction = static_cast<Instruction>(bytecode[offset]);
   switch (instruction) {
   case Instruction::RETURN:
@@ -202,27 +206,33 @@ size_t print_instruction(std::ostream &out, Bytecode const &bytecode,
   case Instruction::CONSTANT_U64:
     return print_constant(out, "CONSTANT_U64", bytecode, offset, sizeof(u64));
 
+  case Instruction::NEGATE:
+    return print_simple(out, "NEGATE", offset);
+
+  case Instruction::ADD:
+    return print_simple(out, "ADD", offset);
+  case Instruction::SUB:
+    return print_simple(out, "SUB", offset);
+  case Instruction::MUL:
+    return print_simple(out, "MUL", offset);
+  case Instruction::DIV:
+    return print_simple(out, "DIV", offset);
+
   default:
     assert(false && "unreachable");
   }
 }
 
-void print(std::ostream &out, Bytecode const &bytecode) noexcept {
-  auto simple = [&](const char *name, size_t offset) -> size_t {
-    out << std::format("{}\n", name);
-    return offset + 1;
-  };
+size_t print_instruction(std::ostream &out, Bytecode const &bytecode,
+                         size_t offset) {
+  out << std::format("{:04d} {:4d} ", offset, bytecode.getLine(offset));
+  return print_dispatch(out, bytecode, offset);
+}
 
-  auto constant = [&](const char *name, size_t offset, size_t bytes) -> size_t {
-    size_t index = bytecode.readImmediate(offset + 1, bytes);
-    out << std::format("{:16s} {:4d} '", name, index);
-    print(out, bytecode.constantAt(index));
-    out << "'\n";
-    return offset + 1 + bytes;
-  };
+void print(std::ostream &out, Bytecode const &bytecode) noexcept {
 
   size_t prev_line = 0;
-  auto dispatch = [&](size_t offset) -> size_t {
+  auto instruction = [&](size_t offset) -> size_t {
     out << std::format("{:04d} ", offset);
     if (offset == 0) {
       prev_line = bytecode.getLine(offset);
@@ -237,27 +247,11 @@ void print(std::ostream &out, Bytecode const &bytecode) noexcept {
       }
     }
 
-    auto instruction = static_cast<Instruction>(bytecode[offset]);
-    switch (instruction) {
-    case Instruction::RETURN:
-      return simple("RETURN", offset);
-
-    case Instruction::CONSTANT_U8:
-      return constant("CONSTANT_U8", offset, sizeof(u8));
-    case Instruction::CONSTANT_U16:
-      return constant("CONSTANT_U16", offset, sizeof(u16));
-    case Instruction::CONSTANT_U32:
-      return constant("CONSTANT_U32", offset, sizeof(u32));
-    case Instruction::CONSTANT_U64:
-      return constant("CONSTANT_U64", offset, sizeof(u64));
-
-    default:
-      assert(false && "unreachable");
-    }
+    return print_dispatch(out, bytecode, offset);
   };
 
   for (size_t offset = 0; offset < bytecode.size();) {
-    offset = dispatch(offset);
+    offset = instruction(offset);
   }
 }
 

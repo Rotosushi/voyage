@@ -3,11 +3,7 @@
 #include <iostream>
 #endif
 
-#if __cplusplus > 202002L && __cpp_concepts >= 202002L
 #include <expected>
-#else
-#error "<expected> unavailable"
-#endif
 
 #include "bytecode.hpp"
 #include "common.hpp"
@@ -20,8 +16,9 @@ public:
 private:
   Stack<Value> m_stack;
 
-  auto result(Value value) -> std::expected<Value, Error> { return {value}; }
+  void reset() noexcept { m_stack.reset(); }
 
+  auto result(Value value) -> std::expected<Value, Error> { return {value}; }
   auto result(Error error) -> std::expected<Value, Error> {
     return std::unexpected{std::move(error)};
   }
@@ -72,6 +69,44 @@ public:
       case Instruction::CONSTANT_U64: {
         Value value = read_constant(sizeof(u64));
         m_stack.push(value);
+        break;
+      }
+
+      case Instruction::NEGATE: {
+        Value &value = m_stack.peek();
+        value.data = -value.data;
+        break;
+      }
+
+      case Instruction::ADD: {
+        Value &b = m_stack.peek(0);
+        Value &a = m_stack.peek(1);
+        a.data = a.data + b.data;
+        m_stack.pop();
+        break;
+      }
+
+      case Instruction::SUB: {
+        Value &b = m_stack.peek(0);
+        Value &a = m_stack.peek(1);
+        a.data = a.data - b.data;
+        m_stack.pop();
+        break;
+      }
+
+      case Instruction::MUL: {
+        Value &b = m_stack.peek(0);
+        Value &a = m_stack.peek(1);
+        a.data = a.data * b.data;
+        m_stack.pop();
+        break;
+      }
+
+      case Instruction::DIV: {
+        Value &b = m_stack.peek(0);
+        Value &a = m_stack.peek(1);
+        a.data = a.data / b.data;
+        m_stack.pop();
         break;
       }
 

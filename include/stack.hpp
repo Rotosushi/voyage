@@ -16,6 +16,10 @@ private:
   size_t m_top = 0;
 
 public:
+  void reset() noexcept {
+    m_data.clear();
+    m_top = 0;
+  }
   [[nodiscard]] bool empty() const noexcept { return m_data.empty(); }
   [[nodiscard]] size_t size() const noexcept { return m_data.size(); }
 
@@ -29,8 +33,8 @@ public:
     m_top--;
     return t;
   }
-  T peek(size_t offset = 0) noexcept {
-    assert((m_top - 1 - offset) >= 0);
+  T &peek(size_t offset = 0) noexcept {
+    assert(((long)m_top - 1L - (long)offset) >= 0);
     return m_data[m_top - 1 - offset];
   }
 
