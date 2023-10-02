@@ -8,7 +8,7 @@ struct Value {
 };
 
 void print(std::ostream &out, Value const &value) {
-  out << std::format("{:10.5g}", value.data);
+  out << std::format("{:.5g}", value.data);
 }
 
 std::ostream &operator<<(std::ostream &out, Value const &value) {

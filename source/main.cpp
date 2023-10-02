@@ -1,27 +1,38 @@
+#include <array>
 #include <iostream>
 
 #include "bytecode.hpp"
 #include "virtual_machine.hpp"
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char *argv[]) {
-  voyage::Bytecode bytecode;
-  bytecode.emitConstant({1.2}, 1);
-  bytecode.emitConstant({3.4}, 1);
-  bytecode.emitAdd(1);
-  bytecode.emitConstant({5.6}, 1);
-  bytecode.emitDiv(1);
-  bytecode.emitNegate(1);
-  bytecode.emitReturn(1);
+static void repl(voyage::VirtualMachine &vm) {
+  //   std::string line;
+  //   while (true) {
+  //     std::cout << "> ";
 
-  print(std::cout, bytecode);
+  //     std::getline(std::cin, line);
+  //     if (std::cin.eof() || std::cin.fail()) {
+  //       std::cout << "\n";
+  //       break;
+  //     }
+  //     line.append(1, '\n');
+  //
+  //     auto bytecode = compile(line);
+  //     vm.interpret(bytecode);
+  //     line.clear();
+  //   }
+}
 
+static void script(voyage::VirtualMachine &vm, char *file) {}
+
+int main(int argc, char *argv[]) {
   voyage::VirtualMachine vm;
 
-  auto result = vm.interpret(bytecode);
-  if (result) {
-    std::cout << result.value() << "\n";
+  if (argc == 1) {
+    repl(vm);
+  } else if (argc == 2) {
+    script(vm, argv[1]);
   } else {
-    std::cout << result.error() << "\n";
+    std::cerr << "Usage: voyage [path]\n";
   }
 
   return EXIT_SUCCESS;
