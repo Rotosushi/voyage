@@ -13,11 +13,11 @@ struct Token {
     RIGHT_BRACE,
     COMMA,
     DOT,
+    SEMICOLON,
     MINUS,
     PLUS,
     SLASH,
     STAR,
-    SEMICOLON,
 
     BANG,
     BANG_EQUAL,
@@ -50,9 +50,9 @@ struct Token {
     WHILE,
   };
 
-  Kind kind;
+  Kind             kind;
   std::string_view text;
-  size_t line;
+  size_t           line;
 
   Token() noexcept : kind(ERROR), line(0) {}
   Token(Kind kind) noexcept : kind(kind), line(0) {}

@@ -26,10 +26,10 @@ private:
 public:
   std::expected<Value, Error> interpret(Bytecode &bytecode) noexcept {
     Bytecode::iterator ip = bytecode.begin();
-    auto read_byte = [&]() { return *ip++; };
-    auto read_constant = [&](size_t bytes) -> Value {
-      auto index = bytecode.readImmediate(ip, bytes);
-      ip += (std::ptrdiff_t)(bytes);
+    auto read_byte        = [&]() { return *ip++; };
+    auto read_constant    = [&](size_t bytes) -> Value {
+      auto index  = bytecode.readImmediate(ip, bytes);
+      ip         += (std::ptrdiff_t)(bytes);
       return bytecode.constantAt(index);
     };
 
@@ -74,14 +74,14 @@ public:
 
       case Instruction::NEGATE: {
         Value &value = m_stack.peek();
-        value.data = -value.data;
+        value.data   = -value.data;
         break;
       }
 
       case Instruction::ADD: {
         Value &b = m_stack.peek(0);
         Value &a = m_stack.peek(1);
-        a.data = a.data + b.data;
+        a.data   = a.data + b.data;
         m_stack.pop();
         break;
       }
@@ -89,7 +89,7 @@ public:
       case Instruction::SUB: {
         Value &b = m_stack.peek(0);
         Value &a = m_stack.peek(1);
-        a.data = a.data - b.data;
+        a.data   = a.data - b.data;
         m_stack.pop();
         break;
       }
@@ -97,7 +97,7 @@ public:
       case Instruction::MUL: {
         Value &b = m_stack.peek(0);
         Value &a = m_stack.peek(1);
-        a.data = a.data * b.data;
+        a.data   = a.data * b.data;
         m_stack.pop();
         break;
       }
@@ -105,7 +105,7 @@ public:
       case Instruction::DIV: {
         Value &b = m_stack.peek(0);
         Value &a = m_stack.peek(1);
-        a.data = a.data / b.data;
+        a.data   = a.data / b.data;
         m_stack.pop();
         break;
       }

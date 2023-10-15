@@ -11,12 +11,12 @@
 namespace voyage {
 class Bytecode {
 public:
-  using Chunk = std::vector<u8>;
-  using iterator = Chunk::iterator;
-  using pointer = Chunk::pointer;
-  using reference = Chunk::reference;
-  using const_iterator = Chunk::const_iterator;
-  using const_pointer = Chunk::const_pointer;
+  using Chunk           = std::vector<u8>;
+  using iterator        = Chunk::iterator;
+  using pointer         = Chunk::pointer;
+  using reference       = Chunk::reference;
+  using const_iterator  = Chunk::const_iterator;
+  using const_pointer   = Chunk::const_pointer;
   using const_reference = Chunk::const_reference;
 
   class Lines {
@@ -78,7 +78,7 @@ private:
     m_lines.add(line);
   }
   void write(Instruction instruction, size_t line) {
-    m_chunk.push_back(static_cast<u8>(instruction));
+    m_chunk.push_back(std::to_underlying(instruction));
     m_lines.add(line);
   }
 
@@ -88,7 +88,7 @@ private:
 
     for (size_t i = 0, j = bytes; i < bytes; ++i, --j) {
       size_t shift = (j * 8) - 8;
-      u8 byte = (immediate >> shift) & 0xFF;
+      u8 byte      = (immediate >> shift) & 0xFF;
       write(byte, line);
     }
   }
@@ -125,9 +125,9 @@ public:
 
     size_t result = 0;
     for (size_t i = 0, j = bytes; i < bytes; ++i, --j) {
-      size_t shift = (8 * j) - 8;
-      u8 byte = m_chunk[offset + i];
-      result |= (size_t)byte << shift;
+      size_t shift  = (8 * j) - 8;
+      u8 byte       = m_chunk[offset + i];
+      result       |= (size_t)byte << shift;
     }
     return result;
   }

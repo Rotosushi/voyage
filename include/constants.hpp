@@ -8,12 +8,12 @@
 namespace voyage {
 class Constants {
 public:
-  using Array = std::vector<Value>;
-  using iterator = Array::iterator;
-  using pointer = Array::pointer;
-  using reference = Array::reference;
-  using const_iterator = Array::const_iterator;
-  using const_pointer = Array::const_pointer;
+  using Array           = std::vector<Value>;
+  using iterator        = Array::iterator;
+  using pointer         = Array::pointer;
+  using reference       = Array::reference;
+  using const_iterator  = Array::const_iterator;
+  using const_pointer   = Array::const_pointer;
   using const_reference = Array::const_reference;
 
 private:

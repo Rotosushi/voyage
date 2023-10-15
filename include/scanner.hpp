@@ -1,18 +1,18 @@
 #pragma once
 #include <cstring>
-#include <string>
+#include <string_view>
 
 #include "token.hpp"
 
 namespace voyage {
 class Scanner {
 public:
-  using iterator = std::string::const_iterator;
+  using iterator = std::string_view::const_iterator;
 
 private:
-  iterator start;
-  iterator cursor;
-  size_t line;
+  iterator m_start;
+  iterator m_cursor;
+  size_t   m_line;
 
   static bool isDigit(char c) noexcept { return c >= '0' && c <= '9'; }
   static bool isID(char c) noexcept {
@@ -20,33 +20,33 @@ private:
   }
 
   Token make(Token::Kind kind) const noexcept {
-    std::string_view text{start, cursor};
-    return {kind, text, line};
+    std::string_view text{m_start, m_cursor};
+    return {kind, text, m_line};
   }
 
   Token error(std::string_view msg) const noexcept {
-    return {Token::ERROR, msg, line};
+    return {Token::ERROR, msg, m_line};
   }
 
   char next() noexcept {
-    cursor++;
-    return cursor[-1];
+    m_cursor++;
+    return m_cursor[-1];
   }
 
-  char peek() const noexcept { return *cursor; }
+  char peek() const noexcept { return *m_cursor; }
   char peekNext() const noexcept {
     if (atEnd()) {
       return '\0';
     }
 
-    return cursor[1];
+    return m_cursor[1];
   }
 
   void skipWhitespace() noexcept {
     while (true) {
       switch (peek()) {
       case '\n':
-        line++;
+        m_line++;
         [[fallthrough]];
       case ' ':
       case '\r':
@@ -77,14 +77,14 @@ private:
       return false;
     }
 
-    cursor++;
+    m_cursor++;
     return true;
   }
 
   Token string() noexcept {
     while (peek() != '\n' && !atEnd()) {
       if (peek() == '\n') {
-        line++;
+        m_line++;
       }
 
       next();
@@ -116,8 +116,8 @@ private:
 
   Token::Kind checkKeyword(int begin, int length, const char *rest,
                            Token::Kind kind) const noexcept {
-    if ((std::distance(start, cursor) == (begin + length)) &&
-        (memcmp(std::to_address(start + begin), rest, length) == 0)) {
+    if ((std::distance(m_start, m_cursor) == (begin + length)) &&
+        (memcmp(std::to_address(m_start + begin), rest, length) == 0)) {
       return kind;
     }
     return Token::IDENTIFIER;
@@ -128,7 +128,7 @@ private:
     // if it starts a keyword, check if the identifier
     // is the keyword. if none of the initial letters
     // prefix a keyword we fallthrough the switch.
-    switch (start[0]) {
+    switch (m_start[0]) {
     case 'a':
       return checkKeyword(1, 2, "nd", Token::AND);
     case 'c':
@@ -138,8 +138,8 @@ private:
     case 'f':
       // #NOTE 'f' can prefix three kewords, and we can distinguish
       // between them by switching on the second letter of each.
-      if (std::distance(start, cursor) > 1) {
-        switch (start[1]) {
+      if (std::distance(m_start, m_cursor) > 1) {
+        switch (m_start[1]) {
         case 'a':
           return checkKeyword(2, 3, "lse", Token::FALSE);
         case 'o':
@@ -162,8 +162,8 @@ private:
     case 's':
       return checkKeyword(1, 4, "uper", Token::SUPER);
     case 't':
-      if (std::distance(start, cursor) > 1) {
-        switch (start[1]) {
+      if (std::distance(m_start, m_cursor) > 1) {
+        switch (m_start[1]) {
         case 'h':
           return checkKeyword(2, 2, "is", Token::THIS);
         case 'r':
@@ -189,20 +189,24 @@ private:
   }
 
 public:
-  Scanner() noexcept : line(1) {}
+  Scanner() noexcept : m_line(1) {}
 
   void reset() noexcept {
-    start = cursor = iterator{};
-    line = 1;
+    m_start = m_cursor = iterator{};
+    m_line             = 1;
   }
 
-  void set(std::string &text) noexcept { start = cursor = text.begin(); }
+  void set(std::string_view text) noexcept {
+    m_start = m_cursor = text.begin();
+  }
 
-  bool atEnd() const noexcept { return *cursor == '\0'; }
+  bool atEnd() const noexcept { return *m_cursor == '\0'; }
+
+  size_t line() const noexcept { return m_line; }
 
   Token scan() noexcept {
     skipWhitespace();
-    start = cursor;
+    m_start = m_cursor;
 
     if (atEnd()) {
       return make(Token::END);

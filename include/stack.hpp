@@ -7,12 +7,12 @@
 namespace voyage {
 template <class T> class Stack {
 public:
-  using Data = std::vector<T>;
-  using iterator = Data::iterator;
+  using Data           = std::vector<T>;
+  using iterator       = Data::iterator;
   using const_iterator = Data::const_iterator;
 
 private:
-  Data m_data;
+  Data   m_data;
   size_t m_top = 0;
 
 public:
@@ -20,7 +20,7 @@ public:
     m_data.clear();
     m_top = 0;
   }
-  [[nodiscard]] bool empty() const noexcept { return m_data.empty(); }
+  [[nodiscard]] bool   empty() const noexcept { return m_data.empty(); }
   [[nodiscard]] size_t size() const noexcept { return m_data.size(); }
 
   void push(T element) noexcept {
@@ -34,12 +34,12 @@ public:
     return t;
   }
   T &peek(size_t offset = 0) noexcept {
-    assert(((long)m_top - 1L - (long)offset) >= 0);
-    return m_data[m_top - 1 - offset];
+    size_t index = m_top - 1U - offset;
+    return m_data[index];
   }
 
-  [[nodiscard]] iterator begin() noexcept { return m_data.begin(); }
-  [[nodiscard]] iterator end() noexcept { return m_data.end(); }
+  [[nodiscard]] iterator       begin() noexcept { return m_data.begin(); }
+  [[nodiscard]] iterator       end() noexcept { return m_data.end(); }
   [[nodiscard]] const_iterator begin() const noexcept { return m_data.begin(); }
   [[nodiscard]] const_iterator end() const noexcept { return m_data.end(); }
 };
